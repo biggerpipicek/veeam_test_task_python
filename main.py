@@ -1,7 +1,4 @@
-import os
-import sys
-import shutil
-import time
+import os, sys, getopt, shutil, time
 
 # Syncing ONLY one-way - source to replica; NOT both ways!
 
@@ -12,23 +9,50 @@ replica = "replica/"
 log = open("log.txt", "a")
 
 
-# Functions for the Copy, Create and Delete operations (*Probably will need to add a function or statement to check if the files were changed in some way*)
-def copy(src, target):
-  txt = f"Copying to {target} from {src} forlder!"
-  log.write(txt)
+# Functions for the file Copy_Create and Delete operations (*Probably will need to add a function or statement to check if the files were changed in some way*)
 
-  print(txt)
+def copy_create(src, target):
+  # Listing the files from src and target folders
+  files_in_src = os.listdir(src)
+  files_in_target = os.listdir(target)
 
-
-def create(src, target):
-  txt = f"Creating in {target} from {src} forlder!"
+  # Checking if the src_file is in the target folder
+  # If not, create the file (or files) that are not in the target folder  
+  for src_file in files_in_src:
+    if src_file not in files_in_target:
+      print(f"File {src_file} doesn't exist in {target} folder!")
+      shutil.copy(src=os.path.join(source, src_file), dst=os.path.join(target, src_file))
+      print(f"File/s were created in {target} folder!")
+  txt = f"Creating in {target} from {src} forlder!\n"
   log.write(txt)
 
   print(txt)
 
 
 def delete(src, target):
-  txt = f"Deleting from {src} and {target} folder!"
+  # Listing the files from src and target folders
+  files_in_src = os.listdir(src)
+  files_in_target = os.listdir(target)
+
+  delete_these = []
+
+  # Checking if the target_file is in the source folder
+  # If not, delete the file (or files) that are not in the target folder  
+  for target_file in files_in_target:
+    if target_file not in files_in_src:
+      print(f"File {target_file} doesn't exist in {src} folder!")
+      delete_these.append(target_file)
+    
+    txt = "No files are missing or being deleted!"
+    print(txt)
+
+  for delete_this in delete_these:
+    file_path = os.path.join(target, delete_this)
+    os.remove(file_path)
+    print(f"File/s were deleted from {target} folder!")
+  
+    txt = f"Deleting from {target} forlder!\n"
+  
   log.write(txt)
 
   print(txt)
@@ -38,19 +62,7 @@ def sync_func(src, target):
 
   print("Bruh")
 
-
-def all_commands():
-  commands = []
-  def command(cmd):
-    def folder_paths():
-      print("Folder paths")
-    def sync_interval():
-      print("Syncing interval")
-    def log_file_path():
-      print("log file path")
-
-copy(src=source, target=replica)
-create(src=source, target=replica)
+copy_create(src=source, target=replica)
 delete(src=source, target=replica)
 
 log.close()
